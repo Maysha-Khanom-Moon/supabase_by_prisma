@@ -11,6 +11,20 @@ interface Task {
 
 function App() {
 
+  // delete task from database
+  const deleteTask = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
+    e.preventDefault();
+
+    const { error } = await supabase.from('tasks').delete().eq('id', id);
+
+    if(error) {
+      console.error("Error deleting task", error.message);
+      return;
+    }
+
+    fetchTasks();
+  }
+
   // fetch all tasks from database
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -96,7 +110,7 @@ function App() {
                   <button style={{ padding: '0.5rem 1rem', marginRight: '0.5rem' }}>
                     Edit
                   </button>
-                  <button style={{ padding: '0.5rem 1rem' }}>
+                  <button onClick={(e) => deleteTask(e, task.id)} style={{ padding: '0.5rem 1rem' }}>
                     Delete
                   </button>
                 </div>
