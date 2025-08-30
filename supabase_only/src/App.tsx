@@ -1,9 +1,35 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import './App.css'
 import { supabase } from './assets/supabase-client';
 
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  created_at: string;
+}
+
 function App() {
 
+  // fetch all tasks from database
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const fetchTasks = async () => {
+    const { error, data } = await supabase.from('tasks').select('*').order('created_at', { ascending: true });
+
+    if(error) {
+      console.error("Error fetching tasks", error.message);
+      return;
+    }
+
+    setTasks(data);
+  }
+
+  useEffect(() => {
+    fetchTasks();
+  }, [])
+
+  // add new task to database
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -19,6 +45,7 @@ function App() {
 
     if(error) {
       console.error("Error adding task", error.message);
+      return;
     }
 
     setNewTask({
@@ -52,27 +79,30 @@ function App() {
 
         {/* list of tasks */}
         <ul style={{ listStyle: 'none', padding: '0', margin: '0'}}>
-          <li
-            style={{ 
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              padding: '1rem',
-              marginBottom: '0.5rem',
-            }}
-          >
-            <div>
-              <h3>Title</h3>
-              <p>Description</p>
+          {tasks.map((task) => (
+            
+            <li
+              style={{ 
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                padding: '1rem',
+                marginBottom: '0.5rem',
+              }}
+            >
               <div>
-                <button style={{ padding: '0.5rem 1rem', marginRight: '0.5rem' }}>
-                  Edit
-                </button>
-                <button style={{ padding: '0.5rem 1rem' }}>
-                  Delete
-                </button>
+                <h3>{task.title}</h3>
+                <p>{task.description}</p>
+                <div>
+                  <button style={{ padding: '0.5rem 1rem', marginRight: '0.5rem' }}>
+                    Edit
+                  </button>
+                  <button style={{ padding: '0.5rem 1rem' }}>
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          </li>
+            </li>
+          ))}
         </ul>
       </div>
     </>
