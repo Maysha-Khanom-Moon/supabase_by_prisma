@@ -11,6 +11,22 @@ interface Task {
 
 function App() {
 
+  // update task in database
+  const [newDescription, setNewDescription] = useState('');
+
+  const updateTask = async (e: React.MouseEvent<HTMLButtonElement>,id: number) => {
+    e.preventDefault();
+
+    const { error } = await supabase.from('tasks').update({ description: newDescription }).eq('id', id);
+
+    if(error) {
+      console.error("Error updating task", error.message);
+      return;
+    }
+
+    fetchTasks();
+  }
+
   // delete task from database
   const deleteTask = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
     e.preventDefault();
@@ -107,7 +123,18 @@ function App() {
                 <h3>{task.title}</h3>
                 <p>{task.description}</p>
                 <div>
-                  <button style={{ padding: '0.5rem 1rem', marginRight: '0.5rem' }}>
+
+                  {/* textarea to update task */}
+                  <textarea 
+                  placeholder='Updated description...'
+                  onChange={ (e) => setNewDescription(e.target.value) }
+                  style={{ 
+                      width: '100%', 
+                      marginBottom: '0.5rem', 
+                      padding: '0.5rem' 
+                    }} 
+                  />
+                  <button onClick={(e) => updateTask(e, task.id)} style={{ padding: '0.5rem 1rem', marginRight: '0.5rem' }}>
                     Edit
                   </button>
                   <button onClick={(e) => deleteTask(e, task.id)} style={{ padding: '0.5rem 1rem' }}>
