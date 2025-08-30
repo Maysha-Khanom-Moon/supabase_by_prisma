@@ -45,7 +45,7 @@ function App() {
       {session ? (
         <>
           <button onClick={logout}>Logout</button>
-          <TaskManager />
+          <TaskManager session={session}/>
         </>
       ) : <Sign />}
     </>

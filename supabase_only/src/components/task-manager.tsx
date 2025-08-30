@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { supabase } from '../assets/supabase-client';
+import type { Session } from '@supabase/supabase-js';
 
 interface Task {
   id: number;
@@ -8,7 +9,7 @@ interface Task {
   created_at: string;
 }
 
-const TaskManager = () => {
+const TaskManager = ({session}: {session: Session | null}) => {
 
     // update task in database
   const [newDescription, setNewDescription] = useState('');
@@ -67,10 +68,7 @@ const TaskManager = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    const { error } = await supabase.from('tasks').insert({
-      title: newTask.title,
-      description: newTask.description
-    }).single();
+    const { error } = await supabase.from('tasks').insert({...newTask, email: session?.user.email}).single();
 
     if(error) {
       console.error("Error adding task", error.message);
@@ -112,7 +110,8 @@ const TaskManager = () => {
         <ul style={{ listStyle: 'none', padding: '0', margin: '0'}}>
           {tasks.map((task) => (
             
-            <li
+            <li 
+              key={task.id}
               style={{ 
                 border: '1px solid #ccc',
                 borderRadius: '4px',
