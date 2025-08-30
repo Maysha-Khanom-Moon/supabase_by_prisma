@@ -1,0 +1,1 @@
+#### Just some concepts about supabase & prisma
