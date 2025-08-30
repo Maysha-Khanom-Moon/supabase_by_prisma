@@ -9,11 +9,22 @@ function App() {
   const [session, setSession] = useState(null);
 
   const fetchSession = async () => {
-    const currentSession = await supabase.auth.getSession();
+    const { data: currentSession } = await supabase.auth.getSession();
 
-    setSession(currentSession.data);
+    setSession(currentSession);
     console.log(currentSession);
     
+  }
+
+  const logout = async () => {
+    const {error} = await supabase.auth.signOut();
+    
+    if(error) {
+      console.error("Error signing out", error.message);
+      return;
+    }
+
+    setSession(null);
   }
 
   useEffect(() => {
@@ -23,8 +34,10 @@ function App() {
   return (
     <>
       {session ? (
-        <button>Logout</button>
-        <TaskManager /> 
+        <>
+          <button onClick={logout}>Logout</button>
+          <TaskManager />
+        </>
       ) : <Sign />}
     </>
   )
