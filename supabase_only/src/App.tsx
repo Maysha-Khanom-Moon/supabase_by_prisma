@@ -1,6 +1,32 @@
+import { useState, type FormEvent } from 'react'
 import './App.css'
+import { supabase } from './assets/supabase-client';
 
 function App() {
+
+  const [newTask, setNewTask] = useState({
+    title: '',
+    description: '',
+  })
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    const { error } = await supabase.from('tasks').insert({
+      title: newTask.title,
+      description: newTask.description
+    }).single();
+
+    if(error) {
+      console.error("Error adding task", error.message);
+    }
+
+    setNewTask({
+      title: '',
+      description: '',
+    })
+  }
+
   return (
     <>
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '1rem'}}>
@@ -11,13 +37,15 @@ function App() {
           <input 
             type="text"
             placeholder='Task Title'
+            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
             style={{ width: '100%', marginBottom: '0.5rem', padding: '0.5rem' }}
           />
           <textarea
             placeholder='Task Description'
+            onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
             style={{ width: '100%', marginBottom: '0.5rem', padding: '0.5rem' }}
           />
-          <button type='submit' style={{ padding: '0.5rem 1rem' }}>
+          <button type='submit' onClick={handleSubmit} style={{ padding: '0.5rem 1rem' }}>
             Add Task
           </button>
         </form>
