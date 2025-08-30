@@ -1,33 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '1rem'}}>
+        <h2>Task Manager CRUD</h2>
+
+        {/* form to add a new task */}
+        <form style={{ marginBottom: '1rem' }} action="">
+          <input 
+            type="text"
+            placeholder='Task Title'
+            style={{ width: '100%', marginBottom: '0.5rem', padding: '0.5rem' }}
+          />
+          <textarea
+            placeholder='Task Description'
+            style={{ width: '100%', marginBottom: '0.5rem', padding: '0.5rem' }}
+          />
+          <button type='submit' style={{ padding: '0.5rem 1rem' }}>
+            Add Task
+          </button>
+        </form>
+
+        {/* list of tasks */}
+        <ul style={{ listStyle: 'none', padding: '0', margin: '0'}}>
+          <li
+            style={{ 
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              padding: '1rem',
+              marginBottom: '0.5rem',
+            }}
+          >
+            <div>
+              <h3>Title</h3>
+              <p>Description</p>
+              <div>
+                <button style={{ padding: '0.5rem 1rem', marginRight: '0.5rem' }}>
+                  Edit
+                </button>
+                <button style={{ padding: '0.5rem 1rem' }}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
