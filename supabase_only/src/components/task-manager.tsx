@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { supabase } from '../assets/supabase-client';
 import type { Session } from '@supabase/supabase-js';
-
 interface Task {
   id: number;
   title: string;
@@ -10,6 +9,26 @@ interface Task {
 }
 
 const TaskManager = ({session}: {session: Session | null}) => {
+
+  // supabase subscription for real-time updates
+  useEffect( () => {
+    const channel = supabase
+    .channel('tasks-channel')
+    .on(
+      'postgres_changes', 
+      {event: 'INSERT', schema: 'public', table: 'tasks'}, 
+      (payload) => {
+        const newTask = payload.new as Task;
+        setTasks((prev) => [...prev, newTask]);
+      }).subscribe(( status ) => {
+        console.log("Subscription status" ,status);
+        
+      });
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
     // update task in database
   const [newDescription, setNewDescription] = useState('');
@@ -68,6 +87,7 @@ const TaskManager = ({session}: {session: Session | null}) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
+    // email added for security
     const { error } = await supabase.from('tasks').insert({...newTask, email: session?.user.email}).single();
 
     if(error) {
